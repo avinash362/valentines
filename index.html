@@ -28,10 +28,28 @@
             z-index: 10;
             width: 100%;
             max-width: 400px;
+            transition: all 0.5s ease;
         }
 
         h1 { color: #ff4d6d; font-size: 2rem; margin-bottom: 1rem; }
         p { color: #555; margin-bottom: 2rem; }
+
+        /* The Photo Frame (Hidden initially) */
+        #photo-container {
+            display: none;
+            width: 100%;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease;
+        }
+
+        #valentine-pic {
+            width: 150px; /* Small and cute */
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 
         .buttons {
             display: flex;
@@ -50,7 +68,6 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.1s ease;
             touch-action: manipulation;
         }
 
@@ -61,12 +78,12 @@
             position: absolute;
             color: #ff4d6d;
             top: -20px;
-            user-select: none;
             pointer-events: none;
             animation: fall linear forwards;
         }
 
         @keyframes fall { to { transform: translateY(110vh); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -76,11 +93,17 @@
     </audio>
 
     <div class="container" id="mainContainer">
-        <h1>Will you be my Valentine? ❤️</h1>
-        <p>Choose wisely...</p>
-        <div class="buttons">
-            <button id="yesBtn" onclick="celebrate()">YES</button>
-            <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">NO</button>
+        <div id="photo-container">
+            <img src="your-photo.jpeg" id="valentine-pic" alt="Us">
+        </div>
+
+        <div id="content">
+            <h1>Hey Rhea.. Will you be my Valentine? ❤️</h1>
+            <p>Choose wisely...</p>
+            <div class="buttons">
+                <button id="yesBtn" onclick="celebrate()">YES</button>
+                <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">NO</button>
+            </div>
         </div>
     </div>
 
@@ -88,7 +111,7 @@
         function moveButton() {
             const btn = document.getElementById('noBtn');
             btn.style.position = 'fixed';
-            const padding = 20;
+            const padding = 50;
             const maxWidth = window.innerWidth - btn.offsetWidth - padding;
             const maxHeight = window.innerHeight - btn.offsetHeight - padding;
             const randomX = Math.max(padding, Math.floor(Math.random() * maxWidth));
@@ -98,20 +121,23 @@
         }
 
         function celebrate() {
-            // Play Music
+            // 1. Play Music
             const music = document.getElementById('valentineMusic');
-            music.play().catch(e => console.log("Audio play failed: ", e));
+            music.play();
 
-            const container = document.getElementById('mainContainer');
-            container.innerHTML = `
-                <h1 style="font-size: 2.5rem;">Yay! See you on the 14th! 🌹</h1>
-                <p>I already started planning. ❤️</p>
+            // 2. Show Photo
+            document.getElementById('photo-container').style.display = 'block';
+
+            // 3. Update Text
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <h1 style="font-size: 2rem;">🌹    Yay!    🌹</h1>
+                <p>I knew you'd say yes.</p>
             `;
             
-            const noBtn = document.getElementById('noBtn');
-            if (noBtn) noBtn.remove();
-
-            setInterval(createHeart, 100);
+            // 4. Cleanup and Hearts
+            if (document.getElementById('noBtn')) document.getElementById('noBtn').remove();
+            setInterval(createHeart, 150);
         }
 
         function createHeart() {
