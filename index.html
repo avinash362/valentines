@@ -2,94 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Be My Valentine? ❤️</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
             background-color: #ffe6e6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             overflow: hidden;
             text-align: center;
+            padding: 20px;
         }
-
-        h1 { color: #ff4d6d; font-size: 3rem; }
 
         .container {
             background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2.5rem 1.5rem;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
             z-index: 10;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 2rem;
         }
 
         .buttons {
-            margin-top: 2rem;
-            position: relative;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            position: relative;
+            min-height: 60px;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.1s ease;
+            touch-action: manipulation; /* Prevents double-tap zoom on Safari */
         }
 
-        #yesBtn { background-color: #ff4d6d; color: white; }
-        
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+            z-index: 20;
+        }
+
         #noBtn {
             background-color: #adb5bd;
             color: white;
-            position: absolute;
-            left: 160px; /* Adjust based on button size */
+            position: relative; /* Keeps it in line until triggered */
+            z-index: 15;
         }
 
         .heart {
             position: absolute;
             color: #ff4d6d;
+            top: -20px;
+            user-select: none;
+            pointer-events: none;
             animation: fall linear forwards;
         }
 
         @keyframes fall {
-            to { transform: translateY(100vh); }
+            to { transform: translateY(110vh); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
         <h1>Will you be my Valentine? ❤️</h1>
-        <p>You have no other choice, really.</p>
+        <p>Choose wisely...</p>
         <div class="buttons">
             <button id="yesBtn" onclick="celebrate()">YES</button>
-            <button id="noBtn" onmouseover="moveButton()">NO</button>
+            <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">NO</button>
         </div>
     </div>
 
     <script>
         function moveButton() {
             const btn = document.getElementById('noBtn');
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
             
+            // On the first interaction, we switch to fixed positioning
             btn.style.position = 'fixed';
-            btn.style.left = x + 'px';
-            btn.style.top = y + 'px';
+
+            // Ensure the button stays within the visible screen area
+            const padding = 20;
+            const maxWidth = window.innerWidth - btn.offsetWidth - padding;
+            const maxHeight = window.innerHeight - btn.offsetHeight - padding;
+
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxWidth));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxHeight));
+
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
         }
 
         function celebrate() {
-            document.querySelector('.container').innerHTML = "<h1>Yay! See you on the 14th! 🌹</h1><p>I knew you'd say yes.</p>";
-            setInterval(createHeart, 150);
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <h1 style="font-size: 2.5rem;">Yay! See you on the 14th! 🌹</h1>
+                <p>I already started planning. ❤️</p>
+            `;
+            
+            // Remove the floating "No" button if it's still somewhere else
+            const noBtn = document.getElementById('noBtn');
+            if (noBtn) noBtn.remove();
+
+            setInterval(createHeart, 100);
         }
 
         function createHeart() {
@@ -97,9 +142,13 @@
             heart.classList.add('heart');
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            heart.style.fontSize = Math.random() * 20 + 15 + 'px';
+            heart.style.animationDuration = Math.random() * 2 + 2 + 's';
+            heart.style.opacity = Math.random();
             document.body.appendChild(heart);
+
+            // Cleanup hearts so the phone doesn't lag
+            setTimeout(() => { heart.remove(); }, 5000);
         }
     </script>
 </body>
